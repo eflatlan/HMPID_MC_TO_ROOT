@@ -1,0 +1,7 @@
+*.root
+*.json
+*.log*
+*log*
+*.dat*
+*.ini
+
