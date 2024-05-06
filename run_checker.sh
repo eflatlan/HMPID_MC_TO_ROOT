@@ -3,7 +3,15 @@ baseDir="."
 
 mkdir -p "$baseDir"
 
-#cumulativeOutputFile="${baseDir}/cumulative_SegmentationCkov2_output.log"
+
+cleanup() {
+    echo "Keyboard interrupt (Ctrl+C) detected. Exiting..."
+    echo "Performing cleanup tasks..."
+    exit 1  
+}
+
+trap cleanup SIGINT
+
 
 for i in {1..2000}; do
     echo "Iteration: $i"
