@@ -18,7 +18,9 @@ struct McTruth {
   bool isMipMatchedCorrectly = false;  
   bool isTrackToReconKnownPdg = false; // if we take pdg code being known when making the requirements
  
-  McTruth(bool isMipMatched, int pdgCode, int mipPDG, bool isTrackToRecon) :  isMipMatchedCorrectly(isMipMatched), pdgCodeClu(mipPDG), pdgCodeTrack(pdgCode), isTrackToReconKnownPdg(isTrackToRecon)
+  int numCountedPhotonsPC = -1; // numbef of photon-clusters on PC having the track as MID 
+
+  McTruth(bool isMipMatched, int pdgCode, int mipPDG, bool isTrackToRecon, int nPc) :  isMipMatchedCorrectly(isMipMatched), pdgCodeClu(mipPDG), pdgCodeTrack(pdgCode), isTrackToReconKnownPdg(isTrackToRecon), numCountedPhotonsPC(nPc)
   {}
 
   McTruth() {}
@@ -380,6 +382,17 @@ public:
   Recon(double xRad, double yRad, const std::vector<o2::hmpid::Cluster> &clustersIn, const o2::dataformats::MatchInfoHMP &matchInfo) {
 
 
+    numCkovHough = matchInfo.getNPhots();
+    numCkovHoughMH = matchInfo.getMassHypNumPhot();
+
+    std::cout << "Recon :: Number of Cerenkov photons detected: " << numCkovHough << std::endl;
+    std::cout << "Recon :: Number of Cerenkov photons under mass hypothesis: " << numCkovHoughMH << std::endl;
+
+
+    // ef : this was added now
+    mSizeMip = matchInfo.getMipClusSize();
+
+
 
     mNphots, mQMip;
     matchInfo.getHMPIDmip(mxMip, myMip, mQMip, mNphots);
@@ -729,6 +742,14 @@ public:
   }
 
 
+  int getNumCkovHough() const {
+    return numCkovHough;
+  }
+
+  int getNumCkovHoughMH() const {
+    return numCkovHoughMH;
+  }
+
 private:
 
   static constexpr auto pdgs = {211, 321, 2212};
@@ -781,6 +802,9 @@ private:
 
   std::vector<float> sumProbTrack;
   std::vector<float> pNormPion, pNormKaon, pNormProton;
+
+
+  int numCkovHoughMH, numCkovHough;
 
 
   McTruth mMcTruth;
