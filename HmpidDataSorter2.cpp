@@ -33,9 +33,9 @@ class HmpidDataSorter2 {
   TFile *tFile = new TFile("data.root", "RECREATE");
   
   // Tree holding the probability of each cluster in event (sum of all species and all tracks)
-  TTree *tSumProballTracks = new TTree(
+  /*TTree *tSumProballTracks = new TTree(
       "SumProballTracks",
-      "Tree probability across all tracks and species for chamber-event");
+      "Tree probability across all tracks and species for chamber-event");*/
 
   // tree holding track-informatiom about the actual track to be reconstructed
   TTree *tTrack =
@@ -114,7 +114,7 @@ public:
   }
 
   void fillTrees() {
-    tSumProballTracks->Fill();
+    //tSumProballTracks->Fill();
     tTrack->Fill();
     tOtherTracks->Fill();
     tHighChargeClu->Fill();
@@ -123,15 +123,16 @@ public:
   }
 
   void writeTrees() {
-    tSumProballTracks->Write();
+    //tSumProballTracks->Write();
     tTrack->Write();
     tOtherTracks->Write();
     tHighChargeClu->Write();
     tClusters->Write();
     tMcTruth->Write();
 
-    std::cout << "Number of entries in tSumProballTracks: "
-              << tSumProballTracks->GetEntries() << std::endl;
+    // std::cout << "Number of entries in tSumProballTracks: "
+    //          << tSumProballTracks->GetEntries() << std::endl;
+    
     std::cout << "Number of entries in tTrack: " << tTrack->GetEntries()
               << std::endl;
     std::cout << "Number of entries in tOtherTracks: "
@@ -368,8 +369,9 @@ public:
     tHighChargeClu->Branch("highChargeClu_size", &highChargeClu.size);
 
 
-    tSumProballTracks->Branch("sumProbabilityAllTracks",
-                              &sumProbabilityAllTracks);
+    // only for expansive saved data for ML
+    //tSumProballTracks->Branch("sumProbabilityAllTracks",
+    //                          &sumProbabilityAllTracks);
 
 
     tMcTruth->Branch(

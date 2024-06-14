@@ -38,20 +38,24 @@ struct Tracks {
       refIndexes.emplace_back(mcReconObj->getRefIndex());
 
       ckovRecon.emplace_back(mcReconObj->getCkovRecon());
-      ckovReconMassHyp.emplace_back(mcReconObj->getCkovReconMassHyp());
+      
+      // only for expansive ML datataking, not part of official MC HMPID
+      //ckovReconMassHyp.emplace_back(mcReconObj->getCkovReconMassHyp());
 
       int ckovHough = mcReconObj->getNumCkovHough();
-      int ckovHoughMH = mcReconObj->getNumCkovHoughMH();
+
+      // only for expansive ML datataking, not part of official MC HMPID
+      //int ckovHoughMH = mcReconObj->getNumCkovHoughMH();
 
       numCkovHough.push_back(ckovHough);
-      numCkovHoughMH.push_back(ckovHoughMH);
+      
+      // only for expansive ML datataking, not part of official MC HMPID      
+      // numCkovHoughMH.push_back(ckovHoughMH);
 
       // Print the values just added
       std::cout << "Tracks :: Number of Cerenkov photons detected: "
                 << ckovHough << std::endl;
-      std::cout
-          << "Tracks :: Number of Cerenkov photons under mass hypothesis: "
-          << ckovHoughMH << std::endl;
+
     }
   }
 };
@@ -76,11 +80,14 @@ struct TrackAttributes {
   float refIndexThisTrack;
 
   float ckovReconThisTrack;
-  float ckovReconMassHypThisTrack;
+  int numCkovHough; // number of Hough selected photons
 
-  // number of Hough selected photons
-  int numCkovHough;
-  int numCkovHoughMH;
+  // only for expansive ML datataking, not part of official MC HMPID
+  //int numCkovHoughMH; // number of Hough selected photons
+  //float ckovReconMassHypThisTrack;
+
+  
+
 
 
   // Vectors for "other tracks"
@@ -102,7 +109,9 @@ struct TrackAttributes {
   std::vector<float> refIndexesOtherTracks;
 
   std::vector<float> ckovReconOtherTracks;
-  std::vector<float> ckovReconMassHypOtherTracks;
+  
+  // number of Hough selected photons  
+  //std::vector<float> ckovReconMassHypOtherTracks;
 
   void clear() {
     xMipsOtherTracks.clear();
@@ -122,7 +131,7 @@ struct TrackAttributes {
     qMipsOtherTracks.clear();
     sizeMipsOtherTracks.clear();
     ckovReconOtherTracks.clear();
-    ckovReconMassHypOtherTracks.clear();
+    //ckovReconMassHypOtherTracks.clear();
   }
 
   void setNumberOfTracks(int nTracks) {
@@ -151,7 +160,7 @@ struct TrackAttributes {
     qMipsOtherTracks.clear();
     sizeMipsOtherTracks.clear();
     ckovReconOtherTracks.clear();
-    ckovReconMassHypOtherTracks.clear();
+    //ckovReconMassHypOtherTracks.clear();
 
     xMipsOtherTracks.reserve(nTracks);
     yMipsOtherTracks.reserve(nTracks);
@@ -170,7 +179,7 @@ struct TrackAttributes {
     qMipsOtherTracks.reserve(nTracks);
     sizeMipsOtherTracks.reserve(nTracks);
     ckovReconOtherTracks.reserve(nTracks);
-    ckovReconMassHypOtherTracks.reserve(nTracks);
+    //ckovReconMassHypOtherTracks.reserve(nTracks);
   }
 };
 
@@ -192,8 +201,10 @@ struct ClusterData {
   std::vector<float> sumProbabilityTrack;
   std::vector<int> sizeValues;
 
-  std::vector<int> rawSizeValues;
-  std::vector<int> numRawClustersValues;
+
+  // not part of official MC HMPID
+  //std::vector<int> rawSizeValues;
+  //std::vector<int> numRawClustersValues;
 
   ClusterData() {}
 
@@ -213,8 +224,8 @@ struct ClusterData {
     pionProbsNorm.assign(numEntries, 0.0f);
     sumProbabilityTrack.assign(numEntries, 0.0f);
     sizeValues.assign(numEntries, 0);
-    rawSizeValues.assign(numEntries, 0);
-    numRawClustersValues.assign(numEntries, 0);
+    //rawSizeValues.assign(numEntries, 0);
+    //numRawClustersValues.assign(numEntries, 0);
   }
 
   void setNumberOfEntries(int nEntries) {
@@ -232,8 +243,8 @@ struct ClusterData {
     pionProbsNorm.resize(nEntries, 0.0f);
     sumProbabilityTrack.resize(nEntries, 0.0f);
     sizeValues.resize(nEntries, 0);
-    rawSizeValues.resize(nEntries, 0);
-    numRawClustersValues.resize(nEntries, 0);
+    //rawSizeValues.resize(nEntries, 0);
+    //numRawClustersValues.resize(nEntries, 0);
   }
 };
 

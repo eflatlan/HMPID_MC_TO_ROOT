@@ -323,7 +323,9 @@ public:
 
     // reconstructed ckov values using standard HTM and HTM with masshyp
     ckovRecon = matchInfo.getHMPsignal();
-    ckovReconMassHyp = matchInfo.getHMPsignalMassHyp();
+
+    // only for expansive ML datataking, not part of official MC HMPID
+    // ckovReconMassHyp = matchInfo.getHMPsignalMassHyp();
 
     auto nClusters = clustersIn.size();
 
