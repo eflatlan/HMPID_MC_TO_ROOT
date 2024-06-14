@@ -71,7 +71,7 @@ private:
   TTree *treeClu;
   TTree *treeKine;
 
-  // mc vector : holdeing MC truth-information from ITS-TPC
+  // mc vector : holding MC truth-information from ITS-TPC
   // entries read by using label.getEventID() etc on elems in  mLabelHMP vector
   std::vector<o2::MCTrack> mcTrackArr, *mcTrackArrPtr = &mcTrackArr;
 
@@ -83,7 +83,6 @@ private:
   std::vector<Cluster> cluArr, *cluArrPtr = &cluArr;
   o2::dataformats::MCTruthContainer<o2::MCCompLabel> cluLblArr,
       *cluLblArrPtr = &cluLblArr;
-  // unsure of implementation and usage of MC truth here, not strictly needed
 
   // Trigger information from HMPID
   std::vector<Trigger> *trigArr = nullptr;
@@ -95,14 +94,16 @@ public:
         fileMatch(matchFileName, "READ") {
     // Check if files are opened correctly
 
+
+    // ef > if later we use same classes for reading real data
     bool mUseMC = true;
 
-    /*if (fileClu.IsZombie()) {
+    if (fileClu.IsZombie()) {
       LOGP(error, "Failed to open cluster File: {}", cluFileName);
       throw std::runtime_error("Failed to open cluFileName.");
     } else {
       LOGP(info, "cluster File opened successfully: {}", cluFileName);
-    }*/
+    }
 
     if (fileMatch.IsZombie()) {
       LOGP(info, "Failed to open match file: {}", matchFileName);
@@ -111,27 +112,14 @@ public:
       LOGP(info, "Match file opened successfully: {}", matchFileName);
     }
 
-    // ok : we use mcReader instead
-    /*if(mUseMC) {
-      if (fileKine.IsZombie()) {
-        LOGP(error, "Failed to open mc truth file: {}", mcFileName);
-        throw std::runtime_error("Failed to open mcFileName.");
-      } else {
-        LOGP(info, "Failed to open mc truth file:  {}", mcFileName);
-      }
-    } else {
-      LOGP(info, "Mc truth false");
-    }*/
+
 
     // Initialize TTree objects
     initializeClusterTree();
-    initializeMatchTree(/*0, 0, 0*/);
+    initializeMatchTree();
 
-    /* use mcReader instead to read MC truth information from ITS-TPC
-    if(mUseMc) {
-      initializeMCTree(mcTrackArrPtr);
-    } */
 
+    // check that the content of the TTree is ok
     if (!treeMatch) {
       LOGP(error, "Failed to initialize treeMatch TTree object.");
       throw std::runtime_error("Failed to initialize treeMatch TTree object.");
@@ -146,41 +134,31 @@ public:
       LOGP(info, "treeClu TTree object initialized successfully.");
     }
 
-    /*
-    if (mUseMc) {
-      if (!treeKine) {
-        LOGP(error, "Failed to initialize treeKine TTree object.");
-        throw std::runtime_error("Failed to initialize treeKine TTree object.");
-      } else {
-        LOGP(info, "treeKine TTree object initialized successfully.");
-      }
-    } else {
-      LOGP(info, "Tree MC truth not initialized because Mc truth false");
-    }*/
-
     // mcTrackArrPtr
     // bool mUseMc = true;
     if (mUseMC) {
-      LOGP(info, "HmpidDataReader2 : useMC {} ; call hmpidDataSorter2", mUseMC);
       HmpidDataSorter2 hmpidDataSorter2;
+      hmpidDataSorter2.setTriggers(trigArr);
 
-      hmpidDataSorter2.setTriggers(trigArr /*, trigArr*/);
 
-      if(mMatches.size() != mLabelHMP.size()) {
-        LOGP(info, "mMatchessize {} mLabelHMP size {} ", mMatches.size(), mLabelHMP.size());
+      // make sure the number of matches and the MC Branch containign the labels for the matches are of equal size
+      if (mMatches.size() != mLabelHMP.size()) {
+        LOGP(info, "number of matches {} mLabelHMP size {} ", mMatches.size(),
+             mLabelHMP.size());
         LOGP(error, "Matches tracks and  MC have different sizes");
         throw std::runtime_error("Matches tracks and  MC have different sizes");
         return;
       }
-      
-      LOGP(info, "HmpidDataReader2 : useMC {} ; call setClusterMcTruth", mUseMC);
-      if(cluArr.size() != cluLblArr.getIndexedSize()) {
-        LOGP(info, "cluArr {} cluLblArr size {} ", mMatches.size(), cluLblArr.getIndexedSize());
+
+
+      // make sure the number of clusters and the MC Branch containign the labels for the clusters are of equal size
+      if (cluArr.size() != cluLblArr.getIndexedSize()) {
+        LOGP(info, "cluArr {} cluLblArr size {} ", mMatches.size(),
+             cluLblArr.getIndexedSize());
         LOGP(error, "Clusters and  MC have different sizes");
         throw std::runtime_error("Clusters  and  MC have different sizes");
         return;
       }
-
 
       hmpidDataSorter2.organizeAndSortClusters(cluArr);
 
@@ -194,7 +172,7 @@ public:
 
   ~HmpidDataReader2() {}
 
-  std::vector<Cluster> getClusInEvent(int event) const {
+  /*std::vector<Cluster> getClusInEvent(int event) const {
     auto pTgr = &trigArr->at(event);
     std::vector<Cluster> oneEventClusters;
     for (int j = pTgr->getFirstEntry(); j <= pTgr->getLastEntry(); j++) {
@@ -203,32 +181,26 @@ public:
     }
 
     return oneEventClusters;
-  }
+  } */
 
-  std::vector<Cluster> *getcluArrPtr() const { return cluArrPtr; }
-
-  std::vector<Trigger> *getTrigArr() const { return trigArr; }
+  //std::vector<Cluster> *getcluArrPtr() const { return cluArrPtr; }
+  //std::vector<Trigger> *getTrigArr() const { return trigArr; }
 
   void initializeClusterTree();
+  TTree *initializeMCTree();
 
   void initializeMatchTree();
+
   void readMatch(int eventID, int &startIndex,
                  std::vector<o2::dataformats::MatchInfoHMP> &filteredMatches,
                  std::vector<o2::MCCompLabel> &filteredLblMatches);
 
-  // std::vector<o2::dataformats::MatchInfoHMP> readMatch(int eventID, int
-  // &startIndex);
-  /*static TTree *initializeClusterTree(
-      std::vector<Cluster> *&cluArrPtr, std::vector<Trigger> *&trigArr);*/
-
-  TTree *initializeMCTree();
 
   std::vector<o2::MCTrack> *readMC(std::vector<o2::MCTrack> *&mcTrackArrPtr,
                                    TTree *treeKine, int eventId);
 
   static const o2::MCTrack *getMCEntry(std::vector<o2::MCTrack> *mcTrackArrPtr,
                                        int trackID);
-  static void readTreeEntries();
 };
 
 void HmpidDataReader2::initializeMatchTree() {
@@ -253,13 +225,13 @@ void HmpidDataReader2::initializeMatchTree() {
   Printf("treeMatch entries %lld", treeMatch->GetEntries());
 
   if (matchArrPtr == nullptr) {
-    Printf("HmpidDataReader2::initializeMatchTree matchArrPtr== nullptr");
+    Printf("HmpidDataReader2::initializeMatchTree : matchArrPtr is nullptr");
     // fileMatch.Close();
     throw std::runtime_error("matchArrPtr nullptr");
   }
 
   if (mUseMC && !mLabelHMPPtr) {
-    Printf("HmpidDataReader2::initializeMatchTree mLabelHMPPtr== nullptr");
+    Printf("HmpidDataReader2::initializeMatchTree : mLabelHMPPtr is nullptr");
     // fileMatch.Close();
     throw std::runtime_error("mLabelHMPPtr nullptr");
   } else if (mUseMC && mLabelHMPPtr) {
@@ -277,12 +249,9 @@ void HmpidDataReader2::readMatch(
     std::vector<o2::dataformats::MatchInfoHMP> &filteredMatches,
     std::vector<o2::MCCompLabel> &filteredLblMatches) {
 
-  Printf("Call HmpidDataReader2::readMatch");
-  // std::vector<o2::dataformats::MatchInfoHMP> filteredMatches;// = new
-  // std::vector<o2::dataformats::MatchInfoHMP>;
 
   if (!treeMatch) {
-    Printf("TTree not initialized");
+    Printf("treeMatch not initialized");
     return; // filteredMatches;
   } else {
     Printf("HmpidDataReader2::readMatch : TTree  initialized");
@@ -297,7 +266,7 @@ void HmpidDataReader2::readMatch(
   bool found = false;
 
   if (matchArrPtr == nullptr) {
-    Printf("HmpidDataReader2::readMatch :: matchArrPtr== nullptr");
+    Printf("HmpidDataReader2::readMatch : matchArrPtr== nullptr");
     return; // filteredMatches;
   } else {
     Printf("HmpidDataReader2::readMatch : matchArrPtr ok");
@@ -337,9 +306,6 @@ void HmpidDataReader2::readMatch(
     // startIndex = i;
     //  ef : we cant use this atm, since the clusters from the same trigger
     //  sometimes have different eventNumber!
-
-    LOGP(info, "trackEvent {}, i {} | getMipClusEvent {}", track.getEvent(), i,
-         track.getMipClusEvent());
 
     // ef: TODO is this now needed when checking MCtruth from MClabel?
     if (track.getEvent() != eventID) {
@@ -456,6 +422,8 @@ HmpidDataReader2::getMCEntry(std::vector<o2::MCTrack> *mcTrackArrPtr,
       const auto &mcTrack = (*mcTrackArrPtr)[i];
       if (i == trackID) {
 
+
+        // ef > verbose printing 
         /*TParticlePDG* pPDG =
         TDatabasePDG::Instance()->GetParticle(mcTrack->GetPdgCode()); auto pT =
         TMath::Abs(mcTrack->GetStartVertexMomentumX() *
@@ -465,20 +433,7 @@ HmpidDataReader2::getMCEntry(std::vector<o2::MCTrack> *mcTrackArrPtr,
         auto pdgCode = mcTrack->GetPdgCode();
         LOGP(info, "Particle {}: pdg = {}, pT = {}", i, pdgCode, pT);
         */
-        /*
-        Printf("Particle %d: pdg = %d, pT = %f, px = %f, py = %f, pz = %f, vx "
-               "= %f, vy = %f, vz = %f",
-               i, mcTrack->GetPdgCode(),
-               TMath::Abs(mcTrack->GetStartVertexMomentumX() *
-                              mcTrack->GetStartVertexMomentumX() +
-                          mcTrack->GetStartVertexMomentumY() *
-                              mcTrack->GetStartVertexMomentumY()),
-               mcTrack->GetStartVertexMomentumX(),
-               mcTrack->GetStartVertexMomentumY(),
-               mcTrack->GetStartVertexMomentumZ(),
-               mcTrack->GetStartVertexCoordinatesX(),
-               mcTrack->GetStartVertexCoordinatesY(),
-               mcTrack->GetStartVertexCoordinatesZ());*/
+
         return &mcTrack;
       }
     }
@@ -486,19 +441,5 @@ HmpidDataReader2::getMCEntry(std::vector<o2::MCTrack> *mcTrackArrPtr,
   return nullptr;
 }
 
-void HmpidDataReader2::readTreeEntries() {
-  // Open the ROOT file
-  /*
-  int i;
-  auto trackVector = readTrack(0,0,i);
-  auto clusterVector = readClu(0,0,i);
-  std::vector<o2::MCTrack>* mcVector = readMC(0,0,i);
-  for() {
-
-  }
-
-        Printf("numTracks %d numClusters %d numMC %d", trackVector->size(),
-  clusterVector->size(), mcVector->size()); */
-}
 
 #endif // HMPID_DATA_READER_H

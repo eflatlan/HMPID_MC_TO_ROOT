@@ -1,4 +1,4 @@
-//#if !defined(__CLING__) || defined(__ROOTCLING__)
+// #if !defined(__CLING__) || defined(__ROOTCLING__)
 
 #pragma once
 #include "CommonDataFormat/InteractionRecord.h"
@@ -11,7 +11,7 @@
 #include "SimulationDataFormat/MCTruthContainer.h"
 
 // #include "CkovToolsSingle.cpp"
-//#include "ParticleUtils2.cpp"
+// #include "ParticleUtils2.cpp"
 #include "HmpidDataReader2.cpp"
 
 #include <utility>
@@ -20,12 +20,26 @@
 #include <TMath.h>
 #include <cmath>
 
-
 // #endif
 
 
-float calcCkovFromMass(float p, float n, int pdg);
+void SegmentationCkov2(double _sigmaSep = 1.5) {
 
+
+  // clusters and triggers
+  std::vector<o2::hmpid::Cluster> *clusterArr = nullptr;
+
+
+  auto matchFileName = "o2match_hmp.root";
+  auto cluFileName = "hmpidclusters.root";
+  auto mcFileName = "o2sim_Kine.root";
+
+  HmpidDataReader2 hmpidDataReader(matchFileName, cluFileName, mcFileName);
+
+}
+
+/*
+float calcCkovFromMass(float p, float n, int pdg);
 
 void evaluateClusterTrack(
     std::vector<o2::hmpid::ClusterCandidate> &clusterPerChamber,
@@ -35,43 +49,15 @@ void evaluateClusterTrack(
 
 std::array<float, 3> calcCherenkovHyp(float p, float n);
 
-
-void SegmentationCkov2(double _sigmaSep = 1.5) {
-
-
-  /*
-  treeOut->Branch("reconCkov", &reconCkovBranch);
-  treeOut->Branch("cluCharge", &cluChargeBranch);
-  treeOut->Branch("cluSize", &cluSizeBranch);
-  treeOut->Branch("refIndex", &refIndexBranch);
-  treeOut->Branch("xRad", &xRadBranch);
-  treeOut->Branch("yRad", &yRadBranch);
-  treeOut->Branch("xMip", &xMipBranch);
-  treeOut->Branch("yMip", &yMipBranch);
-  treeOut->Branch("th", &thBranch);
-  treeOut->Branch("ph", &phBranch);
-  treeOut->Branch("p", &pBranch);
-  */ 
-
-  // clusters and triggers
-  std::vector<o2::hmpid::Cluster> *clusterArr = nullptr;
-  /*std::vector<o2::hmpid::Topology> mTopologyFromFile,
-      *mTopologyFromFilePtr = &mTopologyFromFile;*/ 
-
-
-  auto matchFileName = "o2match_hmp.root";
-  auto cluFileName = "hmpidclusters.root";
-  auto mcFileName = "o2sim_Kine.root";
-	
-  
-  HmpidDataReader2 hmpidDataReader(matchFileName, cluFileName, mcFileName);
-
-
-  /*LOGP(info, "fileOut->Close();"); * / 
-  mParticleEvents.writeH5();
-  LOGP(info, " mParticleEvents.writeH5();");
-  */
-}
+  double radThick()  {
+    return 1.5;
+  } //<--TEMPORAR--> to be removed in future. Radiator thickness
+  double winThick()  {
+    return 0.5;
+  } //<--TEMPORAR--> to be removed in future. Window thickness
+  double gapThick()  {
+    return 8.0;
+  } //<--TEMPORAR--> to be removed in future. Proximity gap thickness
 
 float calcCkovFromMass(float p, float n, int pdg) {
   // Constants for particle masses (in GeV/c^2)
@@ -138,38 +124,28 @@ void evaluateClusterTrack(
   // make static?
 
   // make account for varying nF ? +- 2 std ?
-  const auto &ckovHypsMin = calcCherenkovHyp(momentum, nF);
+  //const auto &ckovHypsMin = calcCherenkovHyp(momentum, nF);
 
-  const auto &ckovHypsMax = calcCherenkovHyp(momentum, nF);
+  //const auto &ckovHypsMax = calcCherenkovHyp(momentum, nF);
 
   float xRad, yRad, xPc, yPc, thetaP, phiP;
-  track.getHMPIDtrk(xRad, yRad, xPc, yPc, thetaP, phiP);
+  track.getHMPIDtrk(xPc, yPc, thetaP, phiP);
+
+  // find xRa, yRa by linear extrapolation>
+  xRad = xPc - (radThick() + winThick() + gapThick()) * TMath::Cos(phiP) * TMath::Tan(thetaP); 
+  yRad = yPc - (radThick() + winThick() + gapThick()) * TMath::Sin(phiP) * TMath::Tan(thetaP);
 
   float xMip, yMip;
   int nph, q;
   track.getHMPIDmip(xMip, yMip, q, nph);
-
-  const auto &L = 0.5; //
-  double radParams[7] = {
-      xRad,
-      yRad,
-      L,
-      thetaP,
-      phiP,
-      momentum,
-      static_cast<double>(mcTrackPdg * 1.0)}; // ef : TODO add PID to MLinfoHMP?
-
-  double refIndexes[3] = {nF, nQ, nG};
-
 }
-
+/ * 
 const float mass_Pion = 0.1396, mass_Kaon = 0.4937,
             mass_Proton = 0.938; // masses in
 std::array<float, 3> masses = {mass_Pion, mass_Kaon, mass_Proton};
 const float mass_Pion_sq = mass_Pion * mass_Pion,
             mass_Kaon_sq = mass_Kaon * mass_Kaon,
             mass_Proton_sq = mass_Proton * mass_Proton;
-
 
 std::array<float, 3> calcCherenkovHyp(float p, float n) {
   const float p_sq = p * p;
@@ -189,7 +165,7 @@ std::array<float, 3> calcCherenkovHyp(float p, float n) {
       static_cast<float>(TMath::ACos(cos_ckov_Proton));
 
   Printf("Pion %.3f Kaon %.3f Proton %.3f", ckovAnglePion, ckovAngleKaon,
-         ckovAngleProton);
+         ckovAngleProton); 
 
   return {ckovAnglePion, ckovAngleKaon, ckovAngleProton};
-}
+}*/

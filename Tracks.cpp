@@ -1,195 +1,201 @@
 
+#include "MCRecon.cpp"
 #include <vector>
-#include "Recon.cpp"
-
 
 #ifndef Tracks_H
 #define Tracks_H
 
-namespace Tracks  // fix namespace etc..
+namespace Tracks // fix namespace etc..
 {
 
-  struct Tracks{
-    std::vector<float> xMips, yMips, xRads, yRads, xPCs, yPCs, thetaPs, phiPs, momentums, mipPcDists, ckovThPion, ckovThKaon, ckovThProton, refIndexes;
-    std::vector<int> sizeMips, qMips;
+struct Tracks {
+  std::vector<float> xMips, yMips, xRads, yRads, xPCs, yPCs, thetaPs, phiPs,
+      momentums, mipPcDists, ckovThPion, ckovThKaon, ckovThProton, refIndexes;
+  std::vector<int> sizeMips, qMips;
 
+  std::vector<int> numCkovHough, numCkovHoughMH;
 
-   std::vector<float> ckovRecon, ckovReconMassHyp;
-    void addTrackCands(Recon* reconObj)  {
-      if(reconObj) 
-      {
+  std::vector<float> ckovRecon, ckovReconMassHyp;
+  void addTrackCands(MCRecon *mcReconObj) {
+    if (mcReconObj) {
 
-        LOGP(info, " xRads.empl getRadX xRad {}", reconObj->getRadX());
-        xMips.emplace_back(reconObj->getMipX());
-        yMips.emplace_back(reconObj->getMipY());
-        xRads.emplace_back(reconObj->getRadX());
-        yRads.emplace_back(reconObj->getRadY());
-        xPCs.emplace_back(reconObj->getXpc());
-        yPCs.emplace_back(reconObj->getYpc());
-        thetaPs.emplace_back(reconObj->getThetaP());
-        phiPs.emplace_back(reconObj->getPhiP());
-        momentums.emplace_back(reconObj->getMomentum());
-        qMips.emplace_back(reconObj->getQMip());
-        sizeMips.emplace_back(reconObj->getMipPcDist());
-        mipPcDists.emplace_back(reconObj->getSizeMip());
-        ckovThPion.emplace_back(reconObj->getCkovThPion());
-        ckovThKaon.emplace_back(reconObj->getCkovThKaon());
-        ckovThProton.emplace_back(reconObj->getCkovThProton());
-        refIndexes.emplace_back(reconObj->getRefIndex());
+      LOGP(info, " xRads.empl getRadX xRad {}", mcReconObj->getRadX());
+      xMips.emplace_back(mcReconObj->getMipX());
+      yMips.emplace_back(mcReconObj->getMipY());
+      xRads.emplace_back(mcReconObj->getRadX());
+      yRads.emplace_back(mcReconObj->getRadY());
+      xPCs.emplace_back(mcReconObj->getXpc());
+      yPCs.emplace_back(mcReconObj->getYpc());
+      thetaPs.emplace_back(mcReconObj->getThetaP());
+      phiPs.emplace_back(mcReconObj->getPhiP());
+      momentums.emplace_back(mcReconObj->getMomentum());
+      qMips.emplace_back(mcReconObj->getQMip());
+      sizeMips.emplace_back(mcReconObj->getSizeMip());
+      mipPcDists.emplace_back(mcReconObj->getMipPcDist());
+      ckovThPion.emplace_back(mcReconObj->getCkovThPion());
+      ckovThKaon.emplace_back(mcReconObj->getCkovThKaon());
+      ckovThProton.emplace_back(mcReconObj->getCkovThProton());
+      refIndexes.emplace_back(mcReconObj->getRefIndex());
 
+      ckovRecon.emplace_back(mcReconObj->getCkovRecon());
+      ckovReconMassHyp.emplace_back(mcReconObj->getCkovReconMassHyp());
 
-        ckovRecon.emplace_back(reconObj->getCkovRecon());
-        ckovReconMassHyp.emplace_back(reconObj->getCkovReconMassHyp());
+      int ckovHough = mcReconObj->getNumCkovHough();
+      int ckovHoughMH = mcReconObj->getNumCkovHoughMH();
 
-      }
+      numCkovHough.push_back(ckovHough);
+      numCkovHoughMH.push_back(ckovHoughMH);
+
+      // Print the values just added
+      std::cout << "Tracks :: Number of Cerenkov photons detected: "
+                << ckovHough << std::endl;
+      std::cout
+          << "Tracks :: Number of Cerenkov photons under mass hypothesis: "
+          << ckovHoughMH << std::endl;
     }
-
-  };
-
-
-
-
-struct TrackAttributes {
-    // Attributes for "this track"
-    float xMipThisTrack;
-    float yMipThisTrack;
-    float xRadThisTrack;
-    float yRadThisTrack;
-    float xPCThisTrack;
-    float yPCThisTrack;
-    float thetaPThisTrack;
-    float phiPThisTrack;
-    float momentumThisTrack;
-    int qMipThisTrack;
-    int sizeMipThisTrack;
-    float mipPcDistThisTrack;
-    float ckovThPionThisTrack;
-    float ckovThKaonThisTrack;
-    float ckovThProtonThisTrack;
-    float refIndexThisTrack;
-
-    float ckovReconThisTrack;
-    float ckovReconMassHypThisTrack;
-
-
-    // Vectors for "other tracks"
-    std::vector<float> xMipsOtherTracks;
-    std::vector<float> yMipsOtherTracks;
-    std::vector<float> xRadsOtherTracks;
-    std::vector<float> yRadsOtherTracks;
-    std::vector<float> xPCsOtherTracks;
-    std::vector<float> yPCsOtherTracks;
-    std::vector<float> thetaPsOtherTracks;
-    std::vector<float> phiPsOtherTracks;
-    std::vector<float> momentumsOtherTracks;
-    std::vector<int> qMipsOtherTracks;
-    std::vector<int> sizeMipsOtherTracks;
-    std::vector<float> mipPcDistsOtherTracks;
-    std::vector<float> ckovThPionOtherTracks;
-    std::vector<float> ckovThKaonOtherTracks;
-    std::vector<float> ckovThProtonOtherTracks;
-    std::vector<float> refIndexesOtherTracks;
-
-
-    std::vector<float>  ckovReconOtherTracks;
-    std::vector<float>  ckovReconMassHypOtherTracks;
-
-    void clear() {
-        xMipsOtherTracks.clear();
-        yMipsOtherTracks.clear();
-        xRadsOtherTracks.clear();
-        yRadsOtherTracks.clear();
-        xPCsOtherTracks.clear();
-        yPCsOtherTracks.clear();
-        thetaPsOtherTracks.clear();
-        phiPsOtherTracks.clear();
-        momentumsOtherTracks.clear();
-        mipPcDistsOtherTracks.clear();
-        ckovThPionOtherTracks.clear();
-        ckovThKaonOtherTracks.clear();
-        ckovThProtonOtherTracks.clear();
-        refIndexesOtherTracks.clear();
-        qMipsOtherTracks.clear();
-        sizeMipsOtherTracks.clear();
-        ckovReconOtherTracks.clear();
-        ckovReconMassHypOtherTracks.clear();     
-    }
-
-    void setNumberOfTracks(int nTracks) {
-
-        // nTracks - 1 bc we take only the other tracks,
-        //
-
-        if(nTracks > 1) {
-          nTracks = nTracks-1;
-        }
-
-        xMipsOtherTracks.clear();
-        yMipsOtherTracks.clear();
-        xRadsOtherTracks.clear();
-        yRadsOtherTracks.clear();
-        xPCsOtherTracks.clear();
-        yPCsOtherTracks.clear();
-        thetaPsOtherTracks.clear();
-        phiPsOtherTracks.clear();
-        momentumsOtherTracks.clear();
-        mipPcDistsOtherTracks.clear();
-        ckovThPionOtherTracks.clear();
-        ckovThKaonOtherTracks.clear();
-        ckovThProtonOtherTracks.clear();
-        refIndexesOtherTracks.clear();
-        qMipsOtherTracks.clear();
-        sizeMipsOtherTracks.clear();
-        ckovReconOtherTracks.clear();
-        ckovReconMassHypOtherTracks.clear();        
-
-        xMipsOtherTracks.reserve(nTracks);
-        yMipsOtherTracks.reserve(nTracks);
-        xRadsOtherTracks.reserve(nTracks);
-        yRadsOtherTracks.reserve(nTracks);
-        xPCsOtherTracks.reserve(nTracks);
-        yPCsOtherTracks.reserve(nTracks);
-        thetaPsOtherTracks.reserve(nTracks);
-        phiPsOtherTracks.reserve(nTracks);
-        momentumsOtherTracks.reserve(nTracks);
-        mipPcDistsOtherTracks.reserve(nTracks);
-        ckovThPionOtherTracks.reserve(nTracks);
-        ckovThKaonOtherTracks.reserve(nTracks);
-        ckovThProtonOtherTracks.reserve(nTracks);
-        refIndexesOtherTracks.reserve(nTracks);
-        qMipsOtherTracks.reserve(nTracks);
-        sizeMipsOtherTracks.reserve(nTracks);
-        ckovReconOtherTracks.reserve(nTracks);
-        ckovReconMassHypOtherTracks.reserve(nTracks);
-    }
-
+  }
 };
 
+struct TrackAttributes {
+  // Attributes for "this track"
+  float xMipThisTrack;
+  float yMipThisTrack;
+  float xRadThisTrack;
+  float yRadThisTrack;
+  float xPCThisTrack;
+  float yPCThisTrack;
+  float thetaPThisTrack;
+  float phiPThisTrack;
+  float momentumThisTrack;
+  int qMipThisTrack;
+  int sizeMipThisTrack;
+  float mipPcDistThisTrack;
+  float ckovThPionThisTrack;
+  float ckovThKaonThisTrack;
+  float ckovThProtonThisTrack;
+  float refIndexThisTrack;
 
+  float ckovReconThisTrack;
+  float ckovReconMassHypThisTrack;
+
+  // number of Hough selected photons
+  int numCkovHough;
+  int numCkovHoughMH;
+
+
+  // Vectors for "other tracks"
+  std::vector<float> xMipsOtherTracks;
+  std::vector<float> yMipsOtherTracks;
+  std::vector<float> xRadsOtherTracks;
+  std::vector<float> yRadsOtherTracks;
+  std::vector<float> xPCsOtherTracks;
+  std::vector<float> yPCsOtherTracks;
+  std::vector<float> thetaPsOtherTracks;
+  std::vector<float> phiPsOtherTracks;
+  std::vector<float> momentumsOtherTracks;
+  std::vector<int> qMipsOtherTracks;
+  std::vector<int> sizeMipsOtherTracks;
+  std::vector<float> mipPcDistsOtherTracks;
+  std::vector<float> ckovThPionOtherTracks;
+  std::vector<float> ckovThKaonOtherTracks;
+  std::vector<float> ckovThProtonOtherTracks;
+  std::vector<float> refIndexesOtherTracks;
+
+  std::vector<float> ckovReconOtherTracks;
+  std::vector<float> ckovReconMassHypOtherTracks;
+
+  void clear() {
+    xMipsOtherTracks.clear();
+    yMipsOtherTracks.clear();
+    xRadsOtherTracks.clear();
+    yRadsOtherTracks.clear();
+    xPCsOtherTracks.clear();
+    yPCsOtherTracks.clear();
+    thetaPsOtherTracks.clear();
+    phiPsOtherTracks.clear();
+    momentumsOtherTracks.clear();
+    mipPcDistsOtherTracks.clear();
+    ckovThPionOtherTracks.clear();
+    ckovThKaonOtherTracks.clear();
+    ckovThProtonOtherTracks.clear();
+    refIndexesOtherTracks.clear();
+    qMipsOtherTracks.clear();
+    sizeMipsOtherTracks.clear();
+    ckovReconOtherTracks.clear();
+    ckovReconMassHypOtherTracks.clear();
+  }
+
+  void setNumberOfTracks(int nTracks) {
+
+    // nTracks - 1 bc we take only the other tracks,
+    //
+
+    if (nTracks > 1) {
+      nTracks = nTracks - 1;
+    }
+
+    xMipsOtherTracks.clear();
+    yMipsOtherTracks.clear();
+    xRadsOtherTracks.clear();
+    yRadsOtherTracks.clear();
+    xPCsOtherTracks.clear();
+    yPCsOtherTracks.clear();
+    thetaPsOtherTracks.clear();
+    phiPsOtherTracks.clear();
+    momentumsOtherTracks.clear();
+    mipPcDistsOtherTracks.clear();
+    ckovThPionOtherTracks.clear();
+    ckovThKaonOtherTracks.clear();
+    ckovThProtonOtherTracks.clear();
+    refIndexesOtherTracks.clear();
+    qMipsOtherTracks.clear();
+    sizeMipsOtherTracks.clear();
+    ckovReconOtherTracks.clear();
+    ckovReconMassHypOtherTracks.clear();
+
+    xMipsOtherTracks.reserve(nTracks);
+    yMipsOtherTracks.reserve(nTracks);
+    xRadsOtherTracks.reserve(nTracks);
+    yRadsOtherTracks.reserve(nTracks);
+    xPCsOtherTracks.reserve(nTracks);
+    yPCsOtherTracks.reserve(nTracks);
+    thetaPsOtherTracks.reserve(nTracks);
+    phiPsOtherTracks.reserve(nTracks);
+    momentumsOtherTracks.reserve(nTracks);
+    mipPcDistsOtherTracks.reserve(nTracks);
+    ckovThPionOtherTracks.reserve(nTracks);
+    ckovThKaonOtherTracks.reserve(nTracks);
+    ckovThProtonOtherTracks.reserve(nTracks);
+    refIndexesOtherTracks.reserve(nTracks);
+    qMipsOtherTracks.reserve(nTracks);
+    sizeMipsOtherTracks.reserve(nTracks);
+    ckovReconOtherTracks.reserve(nTracks);
+    ckovReconMassHypOtherTracks.reserve(nTracks);
+  }
+};
 
 struct ClusterData {
-    int numEntries; // Store the number of entries for resetting
+  int numEntries; // Store the number of entries for resetting
 
-    std::vector<float> xValues;
-    std::vector<float> yValues;
-    std::vector<float> qValues;
-    std::vector<float> thetaCerValues;
-    std::vector<float> phiCerValues;
-    std::vector<float> sigmaRingValues;
-    std::vector<float> pionProbs;
-    std::vector<float> kaonProbs;
-    std::vector<float> protonProbs;
-    std::vector<float> protonProbsNorm;
-    std::vector<float> kaonProbsNorm;
-    std::vector<float> pionProbsNorm;
-    std::vector<float> sumProbabilityTrack;
-    std::vector<int> sizeValues;
+  std::vector<float> xValues;
+  std::vector<float> yValues;
+  std::vector<float> qValues;
+  std::vector<float> thetaCerValues;
+  std::vector<float> phiCerValues;
+  std::vector<float> sigmaRingValues;
+  std::vector<float> pionProbs;
+  std::vector<float> kaonProbs;
+  std::vector<float> protonProbs;
+  std::vector<float> protonProbsNorm;
+  std::vector<float> kaonProbsNorm;
+  std::vector<float> pionProbsNorm;
+  std::vector<float> sumProbabilityTrack;
+  std::vector<int> sizeValues;
 
-    std::vector<int> rawSizeValues;
-    std::vector<int> numRawClustersValues;
+  std::vector<int> rawSizeValues;
+  std::vector<int> numRawClustersValues;
 
-    ClusterData()
-    {}
+  ClusterData() {}
 
   // Method to clear and reset all vectors
   void clear() {
@@ -231,13 +237,11 @@ struct ClusterData {
   }
 };
 
-
 // struct  holding clusters that exceeds a certain charge-trheshold
 // for evaluating FB photons
-struct HighChargeClu 
-{
+struct HighChargeClu {
 
-  void addToFields(float _x, float _y, float _q, int _size ) {
+  void addToFields(float _x, float _y, float _q, int _size) {
     x.push_back(_x);
     y.push_back(_y);
     q.push_back(_q);
@@ -247,7 +251,8 @@ struct HighChargeClu
   std::vector<float> x, y, q;
   std::vector<int> size;
 
-  void setNumberOfEntries(int numberOfEntries) { // not using resize here bc we dont excactly know size
+  void setNumberOfEntries(int numberOfEntries) { // not using resize here bc we
+                                                 // dont excactly know size
     x.reserve(numberOfEntries);
     y.reserve(numberOfEntries);
     q.reserve(numberOfEntries);
@@ -255,15 +260,12 @@ struct HighChargeClu
   }
 
   void clearDataFields() {
-      x.clear();
-      y.clear();
-      q.clear();
-      size.clear();
+    x.clear();
+    y.clear();
+    q.clear();
+    size.clear();
   }
-
 };
 
-
-}
+} // namespace Tracks
 #endif
-
