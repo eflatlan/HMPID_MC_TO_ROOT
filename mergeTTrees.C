@@ -35,8 +35,8 @@ void mergeTTrees() {
     // Clone trees and copy entries
     for (const auto& name : treeNames) {
         if (originalTrees[name]->GetEntries() > 0) {
-            outputFile->cd();  // Ensure we are in the right directory of the output file
-            clonedTrees[name] = originalTrees[name]->CloneTree(0);  // Clone structure
+            outputFile->cd();
+            clonedTrees[name] = originalTrees[name]->CloneTree(0);
             clonedTrees[name]->CopyEntries(originalTrees[name]);  // Copy all entries
             clonedTrees[name]->Write();  // Write the cloned tree to the output file
         }
