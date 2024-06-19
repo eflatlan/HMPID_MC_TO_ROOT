@@ -22,10 +22,9 @@ void mergeTTrees() {
         clonedTrees[name] = nullptr;  // Initialize with nullptr to be cloned later
     }
 
-    // Add files to each TChain
     for (const auto& entry : fs::directory_iterator(fs::current_path())) {
         std::string filename = entry.path().string();
-        if (filename.find("dataSimGun") != std::string::npos && entry.path().extension() == ".root") {
+        if (filename.find("sigma") != std::string::npos && entry.path().extension() == ".root") {
             for (auto& name : treeNames) {
                 ((TChain*)originalTrees[name])->Add(filename.c_str());
             }
@@ -35,17 +34,17 @@ void mergeTTrees() {
     // Clone trees and copy entries
     for (const auto& name : treeNames) {
         if (originalTrees[name]->GetEntries() > 0) {
-            outputFile->cd();
-            clonedTrees[name] = originalTrees[name]->CloneTree(0);
-            clonedTrees[name]->CopyEntries(originalTrees[name]);  // Copy all entries
-            clonedTrees[name]->Write();  // Write the cloned tree to the output file
+            outputFile->cd();                                        // Ensure we are in the right directory of the output file
+            clonedTrees[name] = originalTrees[name]->CloneTree(0);   // Clone structure
+            clonedTrees[name]->CopyEntries(originalTrees[name]);     // Copy all entries
+            clonedTrees[name]->Write();                              // Write the cloned tree to the output file
         }
     }
 
     outputFile->Close();
     std::cout << "All trees have been merged and saved into merged.root." << std::endl;
 
-    // Cleanup: delete original trees (which are actually TChains)
+    // Cleanup: delete original trees
     for (auto& pair : originalTrees) {
         delete pair.second;
     }
