@@ -41,3 +41,9 @@ It reads the clustefile, matchfile, and also gathers the MC-truth information.
 Run the executable :  
 
 `./run_checker.sh`
+# Merging output files
+When running **run_checker.sh**, we will have as many output-files as specified in the loop in the file. 
+We then can merge them by reading the TTree content in each file and append to the vectors.
+This is done using the [mergeTTrees.C](https://github.com/eflatlan/HMPID_MC_TO_ROOT/blob/massHyp/mergeTTrees.C) macro. 
+This macro reads all files containing a specific string and ending with **".root"** and creates a single output file.
+(The string is specified on this line : [mergeTTrees.C#L27](https://github.com/eflatlan/HMPID_MC_TO_ROOT/blob/ab385fdde49f0ece5ae3f60f20bbd838ee5b816f/mergeTTrees.C#L27))
