@@ -1,4 +1,4 @@
-### Run with O2 Branch : [https://github.com/eflatlan/AliceO2/tree/MC_Labelling](MC_Labelling)
+### Run with O2 Branch : [MC_Labelling](https://github.com/eflatlan/AliceO2/tree/MC_Labelling)
 
 # Run files with run_checker.sh
 Run the file [run_checker](https://github.com/eflatlan/HMPID_MC_TO_ROOT/blob/officialMC/run_checker.sh)
